@@ -3,7 +3,7 @@ import Hero from './components/Hero';
 import ValueMVP from './components/ValueMVP';
 import DataAPI from './components/DataAPI';
 import Pricing from './components/Pricing';
-import SearchMapSpec from './components/SearchMapSpec';
+import SearchMap from './components/SearchMap';
 
 function Footer() {
   return (
@@ -27,7 +27,7 @@ export default function App() {
       <Hero />
       <ValueMVP />
       <DataAPI />
-      <SearchMapSpec />
+      <SearchMap />
       <Pricing />
       <Footer />
     </div>
