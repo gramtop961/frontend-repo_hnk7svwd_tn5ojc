@@ -2,18 +2,18 @@ import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import ValueMVP from './components/ValueMVP';
 import DataAPI from './components/DataAPI';
-import Pricing from './components/Pricing';
 import SearchMap from './components/SearchMap';
+import Pricing from './components/Pricing';
 
 function Footer() {
   return (
-    <footer className="bg-slate-900 text-slate-300">
-      <div className="max-w-7xl mx-auto px-6 py-10 text-sm flex flex-col md:flex-row items-center justify-between gap-4">
-        <p>© {new Date().getFullYear()} IDF‑Projets — Île-de-France Projets BTP</p>
-        <div className="flex gap-4">
-          <a className="hover:text-white" href="#value">PVU & MVP</a>
-          <a className="hover:text-white" href="#data">Données & API</a>
-          <a className="hover:text-white" href="#pricing">Tarifs</a>
+    <footer className="border-t border-gray-200">
+      <div className="mx-auto max-w-7xl px-4 py-10 text-sm text-gray-600 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div>© {new Date().getFullYear()} Île‑de‑France Projets BTP</div>
+        <div className="flex items-center gap-4">
+          <a href="#features" className="hover:text-gray-900">Fonctionnalités</a>
+          <a href="#search" className="hover:text-gray-900">Recherche</a>
+          <a href="#pricing" className="hover:text-gray-900">Tarifs</a>
         </div>
       </div>
     </footer>
@@ -22,7 +22,7 @@ function Footer() {
 
 export default function App() {
   return (
-    <div id="top" className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white text-gray-900">
       <Navbar />
       <Hero />
       <ValueMVP />

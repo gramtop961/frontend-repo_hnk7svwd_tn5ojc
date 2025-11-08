@@ -1,113 +1,86 @@
 import { useMemo } from 'react';
 
-const STATUSES = [
-  { key: 'en_cours', label: 'En cours' },
-  { key: 'a_prevoir', label: 'À prévoir' },
-  { key: 'termine', label: 'Terminé' },
-];
+export default function FilterPanel({ values, onChange, onReset, total, loading }) {
+  const summary = useMemo(() => {
+    const s = [];
+    if (values.q) s.push(`Mot-clé: "${values.q}"`);
+    if (values.status) s.push(`Statut: ${values.status}`);
+    if (values.typologie) s.push(`Typologie: ${values.typologie}`);
+    if (values.min_budget || values.max_budget) s.push(`Budget: ${values.min_budget || '—'}–${values.max_budget || '—'} k€`);
+    if (values.date_debut_from || values.date_debut_to) s.push(`Dates: ${values.date_debut_from || '—'} → ${values.date_debut_to || '—'}`);
+    if (values.acteur) s.push(`Acteur: ${values.acteur}`);
+    return s.join(' • ');
+  }, [values]);
 
-const TYPES = [
-  { key: 'logement', label: 'Logement' },
-  { key: 'tertiaire', label: 'Tertiaire' },
-  { key: 'equipement', label: 'Équipement' },
-];
-
-export default function FilterPanel({ filters, setFilters, onReset }) {
-  const activeSummary = useMemo(() => {
-    const parts = [];
-    if (filters.keyword) parts.push(`Mot-clé: "${filters.keyword}"`);
-    if (filters.status.length && filters.status.length < STATUSES.length) {
-      const lbl = filters.status.map(k => STATUSES.find(s => s.key === k)?.label).join(', ');
-      parts.push(`Statut: ${lbl}`);
-    }
-    if (filters.types.length && filters.types.length < TYPES.length) {
-      const lbl = filters.types.map(k => TYPES.find(s => s.key === k)?.label).join(', ');
-      parts.push(`Typologie: ${lbl}`);
-    }
-    if (filters.budgetMin || filters.budgetMax) {
-      parts.push(`Budget: ${filters.budgetMin || 0}k–${filters.budgetMax || '∞'}k`);
-    }
-    return parts.join(' • ');
-  }, [filters]);
-
-  const toggleInArray = (arr, key) => arr.includes(key) ? arr.filter(k => k !== key) : [...arr, key];
+  const inputClass = 'block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black';
+  const labelClass = 'text-xs font-medium text-gray-600';
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="px-4 py-3 border-b border-slate-200">
-        <h3 className="text-sm font-semibold text-slate-700">Filtres</h3>
-        <p className="mt-1 text-xs text-slate-500 min-h-[1.25rem]">{activeSummary || 'Aucun filtre actif'}</p>
+    <div className="rounded-xl border border-gray-200 bg-white p-4 space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="font-medium">Filtres</h3>
+        <button className="text-sm text-gray-600 underline" onClick={onReset}>Réinitialiser</button>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-6">
-        <div>
-          <h4 className="text-xs font-medium text-slate-500 uppercase tracking-wide">Mot-clé</h4>
-          <input
-            type="text"
-            value={filters.keyword}
-            onChange={(e) => setFilters(f => ({ ...f, keyword: e.target.value }))}
-            placeholder="ex: Bercy, ZAC, hôpital..."
-            className="mt-2 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
+      <div className="space-y-1">
+        <label className={labelClass}>Mot-clé</label>
+        <input className={inputClass} value={values.q} onChange={(e) => onChange({ ...values, q: e.target.value })} placeholder="Ex: lycée, ZAC, pont…" />
+      </div>
 
-        <div>
-          <h4 className="text-xs font-medium text-slate-500 uppercase tracking-wide">Statut</h4>
-          <div className="mt-2 flex flex-col gap-2">
-            {STATUSES.map(s => (
-              <label key={s.key} className="inline-flex items-center gap-2 text-sm text-slate-700">
-                <input
-                  type="checkbox"
-                  checked={filters.status.includes(s.key)}
-                  onChange={() => setFilters(f => ({ ...f, status: toggleInArray(f.status, s.key) }))}
-                />
-                {s.label}
-              </label>
-            ))}
-          </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1">
+          <label className={labelClass}>Statut</label>
+          <select className={inputClass} value={values.status} onChange={(e) => onChange({ ...values, status: e.target.value })}>
+            <option value="">Tous</option>
+            <option value="prospection">Prospection</option>
+            <option value="etude">Étude</option>
+            <option value="travaux">Travaux</option>
+            <option value="livre">Livré</option>
+          </select>
         </div>
+        <div className="space-y-1">
+          <label className={labelClass}>Typologie</label>
+          <select className={inputClass} value={values.typologie} onChange={(e) => onChange({ ...values, typologie: e.target.value })}>
+            <option value="">Toutes</option>
+            <option value="logement">Logement</option>
+            <option value="tertiaire">Tertiaire</option>
+            <option value="equipement">Équipement</option>
+            <option value="infrastructure">Infrastructure</option>
+          </select>
+        </div>
+      </div>
 
-        <div>
-          <h4 className="text-xs font-medium text-slate-500 uppercase tracking-wide">Typologie</h4>
-          <div className="mt-2 flex flex-col gap-2">
-            {TYPES.map(t => (
-              <label key={t.key} className="inline-flex items-center gap-2 text-sm text-slate-700">
-                <input
-                  type="checkbox"
-                  checked={filters.types.includes(t.key)}
-                  onChange={() => setFilters(f => ({ ...f, types: toggleInArray(f.types, t.key) }))}
-                />
-                {t.label}
-              </label>
-            ))}
-          </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1">
+          <label className={labelClass}>Budget min (k€)</label>
+          <input type="number" className={inputClass} value={values.min_budget} onChange={(e) => onChange({ ...values, min_budget: e.target.value })} />
         </div>
+        <div className="space-y-1">
+          <label className={labelClass}>Budget max (k€)</label>
+          <input type="number" className={inputClass} value={values.max_budget} onChange={(e) => onChange({ ...values, max_budget: e.target.value })} />
+        </div>
+      </div>
 
-        <div>
-          <h4 className="text-xs font-medium text-slate-500 uppercase tracking-wide">Budget (k€)</h4>
-          <div className="mt-2 grid grid-cols-2 gap-2">
-            <input
-              type="number"
-              inputMode="numeric"
-              placeholder="Min"
-              value={filters.budgetMin ?? ''}
-              onChange={(e) => setFilters(f => ({ ...f, budgetMin: e.target.value ? Number(e.target.value) : undefined }))}
-              className="rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              type="number"
-              inputMode="numeric"
-              placeholder="Max"
-              value={filters.budgetMax ?? ''}
-              onChange={(e) => setFilters(f => ({ ...f, budgetMax: e.target.value ? Number(e.target.value) : undefined }))}
-              className="rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1">
+          <label className={labelClass}>Début (du)</label>
+          <input type="date" className={inputClass} value={values.date_debut_from} onChange={(e) => onChange({ ...values, date_debut_from: e.target.value })} />
         </div>
+        <div className="space-y-1">
+          <label className={labelClass}>Début (au)</label>
+          <input type="date" className={inputClass} value={values.date_debut_to} onChange={(e) => onChange({ ...values, date_debut_to: e.target.value })} />
+        </div>
+      </div>
 
-        <div className="pt-2 flex gap-2">
-          <button onClick={onReset} className="px-3 py-2 text-sm rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50">Réinitialiser</button>
-        </div>
+      <div className="space-y-1">
+        <label className={labelClass}>Acteur (MOA/Architecte/Entreprise)</label>
+        <input className={inputClass} value={values.acteur} onChange={(e) => onChange({ ...values, acteur: e.target.value })} placeholder="Ex: Bouygues, AIA…" />
+      </div>
+
+      <div className="text-xs text-gray-600 bg-gray-50 rounded-md p-3">{summary || 'Aucun filtre appliqué'}</div>
+
+      <div className="flex items-center justify-between text-sm text-gray-600">
+        <span>{loading ? 'Chargement…' : `${total} projets`}</span>
       </div>
     </div>
   );
