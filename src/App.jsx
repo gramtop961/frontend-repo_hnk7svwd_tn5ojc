@@ -1,7 +1,9 @@
+import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import ValueMVP from './components/ValueMVP';
 import DataAPI from './components/DataAPI';
 import Pricing from './components/Pricing';
+import SearchMapSpec from './components/SearchMapSpec';
 
 function Footer() {
   return (
@@ -10,8 +12,8 @@ function Footer() {
         <p>© {new Date().getFullYear()} IDF‑Projets — Île-de-France Projets BTP</p>
         <div className="flex gap-4">
           <a className="hover:text-white" href="#value">PVU & MVP</a>
+          <a className="hover:text-white" href="#data">Données & API</a>
           <a className="hover:text-white" href="#pricing">Tarifs</a>
-          <a className="hover:text-white" href="#">Mentions</a>
         </div>
       </div>
     </footer>
@@ -20,10 +22,12 @@ function Footer() {
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-white">
+    <div id="top" className="min-h-screen bg-white">
+      <Navbar />
       <Hero />
       <ValueMVP />
       <DataAPI />
+      <SearchMapSpec />
       <Pricing />
       <Footer />
     </div>
